@@ -1,6 +1,6 @@
 package com.dhiren.openai.controller;
 
-import com.dhiren.openai.advisor.model.CountryDetails;
+import com.dhiren.openai.model.CountryDetails;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.ListOutputConverter;
 import org.springframework.ai.converter.MapOutputConverter;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")

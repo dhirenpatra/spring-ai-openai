@@ -1,12 +1,15 @@
 package com.dhiren.openai.config;
 
+import com.dhiren.openai.advisor.TokenUsageAuditAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,10 +36,11 @@ public class MemoryChatClientConfig {
                 MessageChatMemoryAdvisor.builder(chatMemory).build();
 
         SimpleLoggerAdvisor simpleLoggerAdvisor = new SimpleLoggerAdvisor();
+        Advisor tokenUsageAdvisor = new TokenUsageAuditAdvisor();
 
         return chatClientBuilder
                 .defaultOptions(options)
-                .defaultAdvisors(List.of(messageChatMemoryAdvisor, simpleLoggerAdvisor))
+                .defaultAdvisors(List.of(messageChatMemoryAdvisor, simpleLoggerAdvisor, tokenUsageAdvisor))
                 .build();
     }
 

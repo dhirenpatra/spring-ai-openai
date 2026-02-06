@@ -1,4 +1,4 @@
-package com.dhiren.openai.advisor.model;
+package com.dhiren.openai.model;
 
 import java.util.List;
 
