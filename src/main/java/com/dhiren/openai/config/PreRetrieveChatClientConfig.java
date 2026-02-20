@@ -17,17 +17,12 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class RAGMemoryChatClientConfig {
+public class PreRetrieveChatClientConfig {
 
-    @Bean("ragMemoryChatClient")
+    @Bean("preRagMemoryChatClient")
     public ChatClient chatClient(ChatClient.Builder chatClientBuilder,
                                  ChatMemory chatMemory,
-                                 RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
-
-        ChatOptions options = ChatOptions
-                .builder().model("gpt-4.1-mini")
-                .temperature(0.7)
-                .build();
+                                 RetrievalAugmentationAdvisor preRetrievalAugmentationAdvisor) {
 
         MessageChatMemoryAdvisor messageChatMemoryAdvisor =
                 MessageChatMemoryAdvisor.builder(chatMemory).build();
@@ -36,21 +31,26 @@ public class RAGMemoryChatClientConfig {
         Advisor tokenUsageAdvisor = new TokenUsageAuditAdvisor();
 
         return chatClientBuilder
-                .defaultOptions(options)
                 .defaultAdvisors(List.of(
                         messageChatMemoryAdvisor,
                         simpleLoggerAdvisor,
                         tokenUsageAdvisor,
-                        retrievalAugmentationAdvisor
+                        preRetrievalAugmentationAdvisor
                 ))
                 .build();
     }
 
     @Bean
-    public RetrievalAugmentationAdvisor retrievalAugmentationAdvisor(
+    public RetrievalAugmentationAdvisor preRetrievalAugmentationAdvisor(
             VectorStore vectorStore, ChatClient chatClient) {
         return RetrievalAugmentationAdvisor
                 .builder()
+                .queryTransformers(
+                        TranslationQueryTransformer
+                                .builder()
+                                .chatClientBuilder(chatClient.mutate())
+                                .targetLanguage("English").build()
+                )
                 .documentRetriever(
                         VectorStoreDocumentRetriever
                                 .builder()
